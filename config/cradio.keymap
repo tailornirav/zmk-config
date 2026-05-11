@@ -1,0 +1,52 @@
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/keys.h>
+
+/ {
+    behaviors {
+        ht: hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <220>;
+            quick-tap-ms = <150>;
+            require-prior-idle-ms = <100>;
+            bindings = <&kp>, <&kp>;
+        };
+    };
+
+    conditional_layers { compatible = "zmk,conditional-layers"; };
+
+    combos { compatible = "zmk,combos"; };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        default_layer {
+            bindings = <
+&kp SEMICOLON  &kp COMMA    &kp PERIOD        &kp P           &kp Y             &kp F                &kp G            &kp C             &kp R        &kp L
+&kp A          &ht LCTRL O  &ht LEFT_SHIFT E  &ht LEFT_GUI U  &ht LEFT_ALT I    &ht LEFT_ALT D       &ht RIGHT_GUI H  &ht LEFT_SHIFT T  &ht RCTRL N  &kp S
+&kp SQT        &kp Q        &kp J             &kp K           &kp X             &kp B                &kp M            &kp W             &kp V        &kp Z
+                                              &ht LEFT TAB    &lt 1 ENTER       &lt 2 LA(BACKSPACE)  &ht RIGHT SPACE
+            >;
+        };
+
+        right_layer {
+            bindings = <
+&kp DOLLAR       &kp AMPERSAND  &ht RIGHT_BRACE LEFT_BRACE  &ht RIGHT_BRACKET LEFT_BRACKET  &ht RIGHT_PARENTHESIS LEFT_PARENTHESIS    &kp EQUAL     &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &kp MINUS
+&kp EXCLAMATION  &kp HASH       &kp TILDE                   &kp SLASH                       &ht BACKSLASH PIPE                        &kp ASTERISK  &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &kp UNDERSCORE
+&kp PERCENT      &kp GRAVE      &kp CARET                   &kp AT_SIGN                     &kp QUESTION                              &kp NUMBER_0  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &kp PLUS
+                                                            &kp DELETE                      &trans                                    &kp UP_ARROW  &kp DOWN
+            >;
+        };
+
+        layer_2 {
+            bindings = <
+&bt BT_CLR_ALL  &trans  &kp LS(LG(LC(NUMBER_3)))  &kp LS(LC(LG(NUMBER_4)))  &kp LC(LEFT)    &kp LC(RIGHT)   &kp LS(LG(NUMBER_4))  &kp RG(RS(NUMBER_3))  &trans  &kp C_VOLUME_UP
+&kp LG(LC(Q))   &trans  &trans                    &kp ESCAPE                &kp CAPSLOCK    &kp RC(DOWN)    &kp RC(UP_ARROW)      &trans                &trans  &kp RG(DELETE)
+&trans          &trans  &trans                    &trans                    &trans          &studio_unlock  &trans                &trans                &trans  &trans
+                                                  &kp LEFT                  &kp RIGHT       &trans          &trans
+            >;
+        };
+    };
+};
