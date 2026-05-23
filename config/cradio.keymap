@@ -179,77 +179,14 @@
         compatible = "zmk,combos";
 
         /* ESC — left home middle+ring */
-
-        combo_esc {
-            timeout-ms = <38>;
-            key-positions = <12 13>;
-            bindings = <&kp ESC>;
-            layers = <BASE SYM NAV NUM>;
-        };
-
         /* TAB — left home index+middle */
-
-        combo_tab {
-            timeout-ms = <38>;
-            key-positions = <11 12>;
-            bindings = <&kp TAB>;
-            layers = <BASE>;
-        };
-
         /* DEL — right home index+middle */
-
-        combo_del {
-            timeout-ms = <38>;
-            key-positions = <16 17>;
-            bindings = <&kp DEL>;
-            layers = <BASE SYM NAV>;
-        };
-
         /* Caps-Word — both top inner */
-
-        combo_cw {
-            timeout-ms = <38>;
-            key-positions = <3 6>;
-            bindings = <&caps_word>;
-            layers = <BASE>;
-        };
-
         /* Backtick/tilde — right ring+pinky top */
-
-        combo_grv {
-            timeout-ms = <38>;
-            key-positions = <7 8>;
-            bindings = <&td_grv>;
-            layers = <BASE>;
-        };
-
         /* Semicolon — left bottom pinky+ring */
-
-        combo_semi {
-            timeout-ms = <38>;
-            key-positions = <20 21>;
-            bindings = <&kp SEMI>;
-            layers = <BASE>;
-        };
-
         /* Word-delete (⌥⌫) — both inner thumbs simultaneously
            This gives you word-delete from BASE with no layer needed */
-
-        combo_wbsp {
-            timeout-ms = <50>;
-            key-positions = <31 32>;
-            bindings = <&kp LA(BSPC)>;
-            layers = <BASE>;
-        };
-
         /* BT Clear — both outer pinkies top row, NAV layer */
-
-        combo_btclr {
-            timeout-ms = <60>;
-            key-positions = <0 9>;
-            bindings = <&bt BT_CLR>;
-            layers = <NAV>;
-        };
     }; /* end combos */
     keymap {
         compatible = "zmk,keymap";
