@@ -1,49 +1,47 @@
 /*
- * Ferris Sweep — Dvorak · Callum Mods · v3
+ * Ferris Sweep — Dvorak · Callum Mods · v4
  * ══════════════════════════════════════════
  * OS     : macOS
- * Mouse  : Ploopy Nano (MB1, MB2, scroll clutch only)
+ * Mouse  : Ploopy Nano (MB1=LCLK, MB2=RCLK, MB3=MCLK for scroll clutch)
  *
- * ── v3 CHANGES ──────────────────────────────────────────────────────
+ * ── v4 CHANGES ──────────────────────────────────────────────────────
  *
- * THUMB CLUSTER (fully redesigned):
- *   Left  outer : hold=NAV,  tap=TAB
- *   Left  inner : hold=NUM,  tap=SPACE        ← was RET, now SPACE
- *   Right inner : hold=SYM,  tap=BACKSPACE     ← was sticky-shift; plain bspc
- *   Right outer : hold=NAV,  tap=RETURN        ← was FUNC; now bilateral NAV
+ * THUMB CLUSTER (new arrangement):
  *
- *   Bilateral NAV = you can hold either outer thumb to get NAV layer.
- *   Critical for Ploopy use: right hand on trackball, left thumb holds NAV.
- *   Or left hand occupied, right thumb holds NAV for arrow/click access.
- * FUNC LAYER — ELIMINATED.
- *   All six things you actually use moved to NAV top row (right hand):
- *     ⌘Space  ⌘Tab  ⌃↑(MC)  ⌃←(desk←)  ⌃→(desk→)  ⇧⌘4(shot)
- *   BT_CLR moved to a NAV combo (both outer pinkies).
- *   That's it. Nothing else.
+ *   [  TAB  ] [ NAV/RET ]   [ NAV/SPC ] [  SYM/BSPC ]
+ *   left out   left inner    right inner   right outer
  *
- * NAV LAYER — cleaned up:
- *   Mouse row: MB1, MB2, Ploopy scroll clutch (⌘⌥⌃⇧+click trick or
- *   a dedicated key — see note below), blanks for unused MB3-5.
- *   Top row: your 6 macOS shortcuts.
- *   Home row: OSM mods (unchanged, they work great).
- *   Arrows: Vim hjkl (unchanged).
+ *   - NAV moved to BOTH inner thumbs (bilateral, as requested)
+ *   - RET on left inner tap, SPACE on right inner tap
+ *   - Left outer = plain TAB (no layer hold needed there)
+ *   - Right outer = SYM hold, BSPC tap
+ *   - Word-delete (⌥⌫) is now a COMBO on BASE layer (both inner thumbs
+ *     tapped together) so it's always available without any layer hold
  *
- * PLOOPY SCROLL CLUTCH NOTE:
- *   The Ploopy Nano's scroll mode is toggled by holding a button while
- *   the trackball is scrolled. In ZMK we emit MB3 (middle click) as the
- *   clutch signal — Ploopy firmware maps this to scroll mode by default.
- *   If your Ploopy uses a different clutch button, swap MB3 for that key.
+ * NAV LAYER — fully populated, no broken aliases:
+ *   All macOS shortcuts written as inline LG()/LA()/LC() calls,
+ *   NOT as #define aliases — this is what ZMK Studio shows correctly.
+ *   Top row right hand: ⌘Space, ⌘Tab, ⌃↑, ⌃←, ⌃→ (your 5 shortcuts)
+ *   No PgUp/PgDn/Home/End — replaced with useful keys:
+ *     Right home row: ←  ↓  ↑  → (Vim hjkl positions)
+ *     Right top row : word-left(⌥←), ↑, word-right(⌥→), ⇧⌘4(screenshot)
+ *     Right bottom  : line-start(⌘←), ↓, line-end(⌘→) — for text editing
+ *   Left top row: lock mods (rare explicit holds)
+ *   Left home row: OSM mods GACS
+ *   Left bottom: ⌘Z ⌘X ⌘C ⌘V ⌘⇧Z
  *
- * BASE LAYER — one structural improvement:
- *   ';' (semicolon) moved from bottom-left pinky to a combo:
- *     left pinky + ring (bottom row) = ';'
- *   That slot becomes REPEAT KEY (&key_repeat).
- *   Why: at 100+ WPM, the most painful bottom-left-pinky reach is semi.
- *   REPEAT handles "ll", "ss", "ee" doublings without the same-finger
- *   strain. Semi is typed less than once per 10 keystrokes in code;
- *   REPEAT fires constantly.
+ * MOUSE:
+ *   &mkp LCLK  &mkp RCLK  &mkp MCLK
+ *   (MCLK = MB3 = scroll clutch signal for Ploopy Nano)
+ *   Requires CONFIG_ZMK_POINTING=y in ferris_sweep.conf
+ *   Include: #include <dt-bindings/zmk/pointing.h>
  *
- * SYM + NUM: untouched. Perfect as-is per your feedback.
+ * BASE LAYER:
+ *   ⌥⌫ (word-delete) as a combo: both inner thumbs simultaneously
+ *   REPEAT key stays on bottom-left pinky
+ *   ; stays as combo (bottom pinky+ring)
+ *
+ * SYM + NUM: untouched per your feedback.
  * ════════════════════════════════════════════════════════════════════ */
 
 #include <behaviors.dtsi>
@@ -51,6 +49,7 @@
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/mouse.h>
 #include <dt-bindings/zmk/outputs.h>
+#include <dt-bindings/zmk/pointing.h>
 
 /* ── Layers ─────────────────────────────────────────────────────────── */
 #define BASE  0
@@ -62,24 +61,6 @@
 #define OSM_MS   1200
 #define LT_TERM  200
 #define LT_QTAP  120
-
-/* ── macOS shortcuts you actually use ───────────────────────────────── */
-#define MC_SPOT   LG(SPACE)          /* Spotlight                        */
-#define MC_CTAB   LG(TAB)            /* Cmd+Tab app switcher             */
-#define MC_MCTL   LC(UP)             /* Mission Control (3-finger up)    */
-#define MC_DSKL   LC(LEFT)           /* Desktop left                     */
-#define MC_DSKR   LC(RIGHT)          /* Desktop right                    */
-#define MC_SHOT   LG(LS(N4))         /* Screenshot region                */
-
-/* ── Other macOS edit shortcuts (NAV bottom-left hand) ──────────────── */
-#define MC_UNDO   LG(Z)
-#define MC_REDO   LG(LS(Z))
-#define MC_CUT    LG(X)
-#define MC_COPY   LG(C)
-#define MC_PASTE  LG(V)
-#define MC_WBSP   LA(BSPC)           /* delete word left                 */
-#define MC_WLFT   LA(LEFT)           /* jump word left                   */
-#define MC_WRGT   LA(RIGHT)          /* jump word right                  */
 
 / {
     behaviors {
@@ -120,8 +101,8 @@
 
         /* ── Thumb layer-taps ────────────────────────────────────────── */
 
-        /* Left outer:  hold=NAV, tap=TAB */
-        lt_nav_tab: lt_nav_tab {
+        /* Left inner:  hold=NAV, tap=RET */
+        lt_nav_ret: lt_nav_ret {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "balanced";
@@ -130,8 +111,8 @@
             bindings = <&mo>, <&kp>;
         };
 
-        /* Left inner:  hold=NUM, tap=SPACE */
-        lt_num_spc: lt_num_spc {
+        /* Right inner: hold=NAV, tap=SPACE */
+        lt_nav_spc: lt_nav_spc {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "balanced";
@@ -140,7 +121,7 @@
             bindings = <&mo>, <&kp>;
         };
 
-        /* Right inner: hold=SYM, tap=BACKSPACE */
+        /* Right outer: hold=SYM, tap=BSPC */
         lt_sym_bsp: lt_sym_bsp {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
@@ -150,8 +131,9 @@
             bindings = <&mo>, <&kp>;
         };
 
-        /* Right outer: hold=NAV, tap=RETURN  (bilateral NAV) */
-        lt_nav_ret: lt_nav_ret {
+        /* Left outer:  hold=NUM, tap=TAB
+           (NUM needs a home; left outer is least-used thumb position) */
+        lt_num_tab: lt_num_tab {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "balanced";
@@ -199,7 +181,7 @@
             layers = <BASE SYM NAV NUM>;
         };
 
-        /* TAB — left home index+middle (fallback; thumb is primary) */
+        /* TAB — left home index+middle */
         combo_tab {
             timeout-ms = <38>;
             key-positions = <11 12>;
@@ -215,7 +197,7 @@
             layers = <BASE SYM NAV>;
         };
 
-        /* Caps-Word — both top inner keys */
+        /* Caps-Word — both top inner */
         combo_cw {
             timeout-ms = <38>;
             key-positions = <3 6>;
@@ -231,15 +213,7 @@
             layers = <BASE>;
         };
 
-        /* Underscore — both inner thumbs */
-        combo_under {
-            timeout-ms = <50>;
-            key-positions = <31 32>;
-            bindings = <&kp UNDER>;
-            layers = <BASE>;
-        };
-
-        /* Semicolon — left bottom pinky+ring (replaces pinky-reach) */
+        /* Semicolon — left bottom pinky+ring */
         combo_semi {
             timeout-ms = <38>;
             key-positions = <20 21>;
@@ -247,7 +221,16 @@
             layers = <BASE>;
         };
 
-        /* BT Clear — both outer pinkies top row, NAV layer only */
+        /* Word-delete (⌥⌫) — both inner thumbs simultaneously
+           This gives you word-delete from BASE with no layer needed */
+        combo_wbsp {
+            timeout-ms = <50>;
+            key-positions = <31 32>;
+            bindings = <&kp LA(BSPC)>;
+            layers = <BASE>;
+        };
+
+        /* BT Clear — both outer pinkies top row, NAV layer */
         combo_btclr {
             timeout-ms = <60>;
             key-positions = <0 9>;
@@ -264,42 +247,44 @@
         /* ── Layer 0: BASE ───────────────────────────────────────────────
          *
          *  ╔══════╦═══╦═══╦═══╦═══╗   ╔═══╦═══╦═══╦═══╦═══╗
-         *  ║  '   ║ , ║ . ║ P ║ Y ║   ║ F ║ G ║ C ║ R ║ L ║
+         *  ║  '"  ║ , ║ . ║ P ║ Y ║   ║ F ║ G ║ C ║ R ║ L ║
          *  ╠══════╬═══╬═══╬═══╬═══╣   ╠═══╬═══╬═══╬═══╬═══╣
          *  ║  A   ║ O ║ E ║ U ║ I ║   ║ D ║ H ║ T ║ N ║ S ║
          *  ╠══════╬═══╬═══╬═══╬═══╣   ╠═══╬═══╬═══╬═══╬═══╣
          *  ║ RPT  ║ Q ║ J ║ K ║ X ║   ║ B ║ M ║ W ║ V ║ Z ║
          *  ╚══════╩═══╩═══╩═╦═╩═╦═╝   ╚═╦═╩═╦═╩═══╩═══╩═══╝
-         *                NAV  NUM     SYM  NAV
-         *               (Tab)(Spc)  (Bsp)(Ret)
+         *                 NUM  NAV     NAV  SYM
+         *                (Tab)(Ret)  (Spc)(Bsp)
          *
-         * CHANGES FROM v2:
-         *  - Bottom-left pinky: REPEAT KEY (replaces semicolon)
-         *    Semicolon lives on combo: left pinky+ring bottom row
-         *    REPEAT fires on double-letters constantly; semi fires rarely
-         *  - Thumb cluster fully swapped/reorganised per your request
-         *  - Right outer thumb now also accesses NAV (bilateral)
+         * COMBOS from BASE:
+         *   ; = left bottom pinky+ring (pos 20+21)
+         *   ⌥⌫ = both inner thumbs together (pos 31+32)
+         *   ESC = left home middle+ring (pos 12+13)
+         *   TAB = left home index+middle (pos 11+12)  [secondary]
+         *   DEL = right home index+middle (pos 16+17)
+         *   `~  = right top ring+pinky (pos 7+8)
+         *   CapsWord = both top inner (pos 3+6)
          */
 
         base_layer {
             display-name = "Base";
             bindings = <
-                &td_quot      &kp COMMA  &kp DOT  &kp P  &kp Y
-                &kp F         &kp G      &kp C     &kp R  &kp L
+                &td_quot     &kp COMMA  &kp DOT  &kp P  &kp Y
+                &kp F        &kp G      &kp C     &kp R  &kp L
 
-                &kp A         &kp O      &kp E    &kp U  &kp I
-                &kp D         &kp H      &kp T     &kp N  &kp S
+                &kp A        &kp O      &kp E    &kp U  &kp I
+                &kp D        &kp H      &kp T     &kp N  &kp S
 
-                &key_repeat   &kp Q      &kp J    &kp K  &kp X
-                &kp B         &kp M      &kp W     &kp V  &kp Z
+                &key_repeat  &kp Q      &kp J    &kp K  &kp X
+                &kp B        &kp M      &kp W     &kp V  &kp Z
 
-                &lt_nav_tab NAV TAB   &lt_num_spc NUM SPACE
-                &lt_sym_bsp SYM BSPC  &lt_nav_ret NAV RET
+                &lt_num_tab NUM TAB    &lt_nav_ret NAV RET
+                &lt_nav_spc NAV SPACE  &lt_sym_bsp SYM BSPC
             >;
         };
 
         /* ── Layer 1: SYM ────────────────────────────────────────────────
-         * UNTOUCHED — perfect per your feedback.
+         * Untouched.
          *
          *  ╔═══╦═══╦═══╦═══╦═══╗   ╔═══╦═══╦═══╦═══╦═══╗
          *  ║ ! ║ @ ║ # ║ $ ║ % ║   ║ ^ ║ & ║ * ║ ~ ║ ` ║
@@ -329,62 +314,59 @@
 
         /* ── Layer 2: NAV ────────────────────────────────────────────────
          *
-         *  ╔══════╦══════╦══════╦══════╦══════╗   ╔═══════╦═══════╦═══════╦═══════╦══════╗
-         *  ║  ⌘⎵  ║  ⌘⇥  ║  ⌃↑  ║  ⌃←  ║  ⌃→  ║   ║ PgUp  ║ Home  ║   ↑   ║  End  ║  ⇧⌘4 ║
-         *  ╠══════╬══════╬══════╬══════╬══════╣   ╠═══════╬═══════╬═══════╬═══════╬══════╣
-         *  ║ OS⌘  ║ OS⌥  ║ OS⌃  ║ OS⇧  ║      ║   ║ PgDn  ║   ←   ║   ↓   ║   →   ║      ║
-         *  ╠══════╬══════╬══════╬══════╬══════╣   ╠═══════╬═══════╬═══════╬═══════╬══════╣
-         *  ║  ⌘Z  ║  ⌘X  ║  ⌘C  ║  ⌘V  ║ ⌘⇧Z ║   ║  MB1  ║  MB2  ║ SCLCH ║       ║      ║
-         *  ╚══════╩══════╩══════╩══╦═══╩══╦═══╝   ╚══╦════╩══╦════╩═══════╩═══════╩══════╝
-         *                          ║  ▓   ║ DEL ║   ║  ⌥⌫ ║  ▓   ║
-         *                          ╚═══════╩═════╝   ╚═══════╩══════╝
+         *  ╔══════╦══════╦══════╦══════╦══════╗   ╔══════╦══════╦══════╦══════╦══════╗
+         *  ║  ⌘   ║  ⌥   ║  ⌃   ║  ⇧   ║      ║   ║  ⌥←  ║   ↑  ║  ⌥→  ║  ⇧⌘4 ║  ⌘⎵  ║
+         *  ╠══════╬══════╬══════╬══════╬══════╣   ╠══════╬══════╬══════╬══════╬══════╣
+         *  ║ OS⌘  ║ OS⌥  ║ OS⌃  ║ OS⇧  ║      ║   ║   ←  ║   ↓  ║   →  ║  ⌘⇥  ║      ║
+         *  ╠══════╬══════╬══════╬══════╬══════╣   ╠══════╬══════╬══════╬══════╬══════╣
+         *  ║  ⌘Z  ║  ⌘X  ║  ⌘C  ║  ⌘V  ║ ⌘⇧Z ║   ║  MB1 ║  MB2 ║  MB3 ║  ⌃←  ║  ⌃→  ║
+         *  ╚══════╩══════╩══════╩══╦═══╩══╦═══╝   ╚══╦═══╩══╦═══╩══════╩══════╩══════╝
+         *                          ║  ▓   ║ ESC ║   ║  ▓  ║  ⌃↑  ║
+         *                          ╚═══════╩═════╝   ╚══════╩══════╝
          *
-         * TOP ROW — your 6 macOS shortcuts, nothing else:
-         *   LEFT  : ⌘Space  ⌘Tab  ⌃↑(MissionCtrl)  ⌃←(desk left)  ⌃→(desk right)
-         *   RIGHT : PgUp  Home  ↑  End  ⇧⌘4(screenshot)
+         * ALL keys use inline key combos (LG, LA, LC) — no #define aliases.
+         * This is what ZMK compiles and ZMK Studio displays correctly.
          *
-         * HOME ROW OSMs — GACS order (unchanged, works great)
+         * RIGHT HAND layout rationale (no PgUp/PgDn/Home/End per request):
+         *   TOP ROW   : ⌥← (word-left)  ↑  ⌥→ (word-right)  ⇧⌘4 (screenshot)  ⌘Space (spotlight)
+         *   HOME ROW  : ←  ↓  →  ⌘Tab (app switch)
+         *   BOTTOM ROW: MB1(left click)  MB2(right click)  MB3(scroll clutch)  ⌃← (desk left)  ⌃→ (desk right)
          *
-         * BOTTOM ROW:
-         *   LEFT  : ⌘Z ⌘X ⌘C ⌘V ⌘⇧Z (macOS edit shortcuts)
-         *   RIGHT : MB1(left click)  MB2(right click)  SCLCH(scroll clutch=MB3)
-         *           Remaining two positions blank — no phantom clicks
+         * THUMB KEYS:
+         *   Left inner (held)  : this IS NAV
+         *   Left inner tap     : ESC (useful — you're already in NAV mindset)
+         *   Right inner (held) : this IS NAV (bilateral)
+         *   Right inner tap    : ⌃↑ (Mission Control — 3-finger-up equivalent)
          *
-         * THUMBS:
-         *   Left held   : this IS NAV
-         *   Left tap    : DEL
-         *   Right inner : ⌥⌫ (delete whole word — your most wanted bspc variant)
-         *   Right held  : this IS NAV (bilateral access)
-         *
-         * BT CLEAR: combo both outer pinkies (pos 0+9) while in NAV layer
+         * BT CLEAR: combo both outer pinkies top row (pos 0+9) in NAV layer
          */
 
         nav_layer {
             display-name = "Nav";
             bindings = <
-                /* Left top: your 6 macOS shortcuts */
-                &kp MC_SPOT   &kp MC_CTAB   &kp MC_MCTL   &kp MC_DSKL   &kp MC_DSKR
-                /* Right top: nav + screenshot */
-                &kp PG_UP     &kp HOME      &kp UP        &kp END       &kp MC_SHOT
+                /* Left top: lock mods for explicit chording */
+                &kp LGUI          &kp LALT          &kp LCTL          &kp LSFT          &none
+                /* Right top: word nav + screenshot + spotlight */
+                &kp LA(LEFT)      &kp UP            &kp LA(RIGHT)     &kp LG(LS(N4))    &kp LG(SPACE)
 
                 /* Left home: one-shot mods GACS */
-                &sk_gui LGUI  &sk_alt LALT  &sk_ctl LCTL  &sk_sft LSFT  &none
-                /* Right home: Vim hjkl */
-                &kp PG_DN     &kp LEFT      &kp DOWN      &kp RIGHT     &none
+                &sk_gui LGUI      &sk_alt LALT      &sk_ctl LCTL      &sk_sft LSFT      &none
+                /* Right home: Vim hjkl + Cmd+Tab */
+                &kp LEFT          &kp DOWN          &kp RIGHT         &kp LG(TAB)       &none
 
-                /* Left bottom: macOS edit */
-                &kp MC_UNDO   &kp MC_CUT    &kp MC_COPY   &kp MC_PASTE  &kp MC_REDO
-                /* Right bottom: MB1, MB2, scroll clutch, blanks */
-                &mkp MB1      &mkp MB2      &mkp MB3      &none         &none
+                /* Left bottom: macOS edit shortcuts */
+                &kp LG(Z)         &kp LG(X)         &kp LG(C)         &kp LG(V)         &kp LG(LS(Z))
+                /* Right bottom: mouse + desktop switching */
+                &mkp LCLK         &mkp RCLK         &mkp MCLK         &kp LC(LEFT)      &kp LC(RIGHT)
 
                 /* Thumbs */
-                &trans        &kp DEL
-                &kp MC_WBSP   &trans
+                &trans            &kp ESC
+                &trans            &kp LC(UP)
             >;
         };
 
         /* ── Layer 3: NUM ────────────────────────────────────────────────
-         * UNTOUCHED — perfect per your feedback.
+         * Untouched.
          *
          *  ╔═══╦═══╦═══╦═══╦═══╗   ╔═══╦═══╦═══╦═══╦═══╗
          *  ║   ║   ║   ║   ║   ║   ║ / ║ 7 ║ 8 ║ 9 ║ - ║
@@ -413,28 +395,33 @@
 
 /*
  * ══════════════════════════════════════════════════════════════════════
- * QUICK REFERENCE
- * ══════════════════════════════════════════════════════════════════════
+ * ferris_sweep.conf — add this line:
+ *   CONFIG_ZMK_POINTING=y
  *
- * THUMBS (left to right):
- *   [NAV/Tab]  [NUM/Space]  [SYM/Bspc]  [NAV/Ret]
+ * THUMB CLUSTER SUMMARY:
+ *   [NUM/Tab] [NAV/Ret]   [NAV/Spc] [SYM/Bsp]
+ *   left-out  left-in      right-in  right-out
  *
- * CAPITALISING:
- *   NAV → OS⇧ (U position) → release NAV → tap letter.
- *   Or: NAV held left, right hand free for key.
+ * KEY SHORTCUTS FROM BASE (no layer needed):
+ *   ⌥⌫  word-delete  = both inner thumbs combo (pos 31+32)
+ *   ;               = left bottom pinky+ring combo (pos 20+21)
+ *   ESC             = left home middle+ring (pos 12+13)
+ *   `~              = right top ring+pinky (pos 7+8)
  *
- * SCREENSHOT:    NAV → right pinky top row (End position → ⇧⌘4)
- * SPOTLIGHT:     NAV → left pinky top row (⌘Space)
- * CMD+TAB:       NAV → left ring top row
- * MISSION CTRL:  NAV → left middle top row (⌃↑)
- * DESK LEFT/RT:  NAV → left index/inner-index top row (⌃← / ⌃→)
- *
- * MOUSE (Ploopy):
- *   NAV → right bottom: B=MB1(left) M=MB2(right) W=MB3(scroll clutch)
- *
- * WORD DELETE:   NAV → right inner thumb (⌥⌫)
- * SEMICOLON:     Combo left bottom pinky+ring (pos 20+21)
- * BT CLEAR:      NAV layer + combo both outer pinkies (pos 0+9)
- *
+ * FROM NAV LAYER (hold either inner thumb):
+ *   Spotlight       = right pinky top  (⌘Space)
+ *   Screenshot      = right ring top   (⇧⌘4)
+ *   Mission Control = right inner thumb tap  (⌃↑)
+ *   Cmd+Tab         = right ring home  (⌘Tab)
+ *   Desktop ←/→    = right ring+pinky bottom (⌃←  ⌃→)
+ *   Word jump ←/→  = right pinky+ring top (⌥← ⌥→)
+ *   Left click      = right pinky bottom (MB1/LCLK)
+ *   Right click     = right ring bottom  (MB2/RCLK)
+ *   Scroll clutch   = right middle bottom (MB3/MCLK)
+ *   Sticky ⌘        = left pinky home (OS⌘)
+ *   Sticky ⌥        = left ring home  (OS⌥)
+ *   Sticky ⌃        = left middle home (OS⌃)
+ *   Sticky ⇧        = left index home  (OS⇧)
+ *   BT Clear        = combo both outer pinkies top row
  * ══════════════════════════════════════════════════════════════════════
  */
