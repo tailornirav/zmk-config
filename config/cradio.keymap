@@ -340,9 +340,9 @@
         nav_layer {
             display-name = "Nav";
             bindings = <
-&kp LS(COMMA)  &kp LG(L)         &kp LG(W)       &kp LG(T)         &kp LG(R)      &kp LEFT      &msc SCRL_UP    &kp UP_ARROW          &kp DOWN            &kp RIGHT
+&kp LS(COMMA)  &kp LG(L)         &kp LG(W)       &kp LG(T)         &kp LG(R)      &kp LEFT      &msc SCRL_DOWN  &kp UP_ARROW          &kp DOWN            &kp RIGHT
 &sk LEFT_ALT   &sk LEFT_CONTROL  &sk LEFT_SHIFT  &sk LEFT_GUI      &kp LG(TAB)    &kp ESCAPE    &mkp LCLK       &mkp RCLK             &kp LC(LEFT_ARROW)  &kp LC(RIGHT)
-&kp LG(Z)      &kp LG(LS(Z))     &kp LG(X)       &kp LG(C)         &kp LG(V)      &kp CAPSLOCK  &msc SCRL_DOWN  &kp LG(LS(NUMBER_4))  &bt BT_CLR_ALL      &kp LC(LG(Q))
+&kp LG(Z)      &kp LG(LS(Z))     &kp LG(X)       &kp LG(C)         &kp LG(V)      &kp CAPSLOCK  &msc SCRL_UP    &kp LG(LS(NUMBER_5))  &bt BT_CLR_ALL      &kp LC(LG(Q))
                                                  &kp LC(UP_ARROW)  &trans         &trans        &kp LG(SPACE)
             >;
         };
